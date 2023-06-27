@@ -1,0 +1,99 @@
+{% extends 'image-captions/_layouts/settings' %}
+
+{% import '_includes/forms.twig' as forms %}
+
+{% set selectedHandle = 'providers' %}
+{% set formActions = [
+    {
+        label: 'Save and continue editing'|t('app'),
+        redirect: 'image-captions/providers/{id}'|hash,
+        shortcut: true,
+    }
+] %}
+
+{% block content %}
+    {{ actionInput('image-captions/providers/save') }}
+    {{ redirectInput('image-captions/providers') }}
+
+    {{ forms.hidden({
+        id: 'id',
+        name: 'id',
+        value: provider.id,
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Service Provider'|t('image-captions'),
+        id: "class",
+        name: "class",
+        options: integrations|map((item) => {
+            label: item.name,
+            value: className(item)
+        }),
+        value: provider.class,
+        errors: provider.getErrors('class'),
+        required: true,
+    }) }}
+
+    {{ forms.textField({
+        first: true,
+        label: 'Name'|t('app'),
+        instructions: 'What this provider should be callend.'|t('image-captions'),
+        id: 'name',
+        name: 'name',
+        value: provider.name,
+        errors: provider.getErrors('name'),
+        required: true,
+        autofocus: true,
+    }) }}
+
+    {{ forms.textField({
+        label: 'Handle'|t('app'),
+        instructions: 'How you’ll refer to this provider.'|t('image-captions'),
+        id: 'handle',
+        class: 'code',
+        name: 'handle',
+        value: provider.handle,
+        errors: provider.getErrors('handle'),
+        required: true
+    }) }}
+
+    <hr>
+
+    {% for integrationKey, integration in integrations %}
+        {% set className = className(integration) %}
+        <div id="{{ "integration-#{integrationKey}" }}" style="{{ provider.class is not empty and loop.index > 1 and provider.class != className ? 'display: none' }}">
+            {% for setting in integration.defineSettings() %}
+                {% set options = {
+                    label: setting.label,
+                    name: "#{className}[#{setting.handle}]",
+                    instructions: setting.instructions,
+                    value: provider.getSetting(setting.handle) ?? setting.default,
+                    required: setting.required,
+                    errors: provider.errors("#{className}.#{setting.handle}")
+                } %}
+
+                {% if setting.type in ['autocomplete', 'password'] %}
+                    {% set options = options|merge({
+                        suggestEnvVars: true
+                    }) %}
+
+                    {{ forms.autosuggestField(options) }}
+                {% elseif setting.type in ['text'] %}
+                    {{ forms.textField(options) }}
+                {% elseif setting.type in ['bool'] %}
+                    {% set options = options|merge({
+                        on: setting.class ?? setting.default,
+                        value: 1
+                    }) %}
+
+                    {{ forms.lightswitchField(options) }}
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% if not provider.handle %}
+    {% js "new Craft.HandleGenerator('#name', '#handle');" %}
+{% endif %}
+

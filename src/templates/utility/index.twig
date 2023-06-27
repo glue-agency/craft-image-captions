@@ -1,0 +1,35 @@
+{% import '_includes/forms' as forms %}
+
+<div class="image-captions">
+    <h1>{{ 'Image Captions'|t('app') }}</h1>
+
+    <form id="image-captions" class="utility" method="post" accept-charset="UTF-8">
+        {{ actionInput('image-captions/utilities/index') }}
+        {{ csrfInput() }}
+
+        {{ forms.checkboxSelectField({
+            label: 'Volumes'|t('app'),
+            instructions: 'Select which volumes to generate alt texts for.'|t('image-captions'),
+            id: 'volumes',
+            name: 'volumes',
+            options: volumes|map(volume => {
+                label: volume.name,
+                value: volume.id,
+                disabled: volume.handle not in configurations
+            }),
+            showAllOption: true,
+        }) }}
+
+        <div class="buttons">
+            {{ forms.submitButton({
+                id: 'submit',
+                label: 'Generate Image Captions'|t('image-captions'),
+                spinner: true,
+                busyMessage: 'Generating'|t('image-captions'),
+                successMessage: 'Image Captions generated'|t('image-captions'),
+                failureMessage: 'Unable to generate Image Captions'|t('image-captions'),
+                retryMessage: 'Try again'|t('image-captions'),
+            }) }}
+        </div>
+    </form>
+</div>

@@ -1,0 +1,24 @@
+{% extends 'image-captions/_layouts/settings' %}
+
+{% import '_includes/forms.twig' as forms %}
+
+{% set selectedHandle = 'configurations' %}
+
+{% block content %}
+    {{ actionInput('image-captions/configurations/save') }}
+    {{ redirectInput('image-captions/configurations') }}
+
+    {% for volume in volumes %}
+        {{ forms.selectField({
+            label: volume.name,
+            id: "configuration-#{volume.uid}",
+            name: "configuration[#{volume.handle}]",
+            instructions: "Allow automatic generation of alt texts for the `{volume}` volume images trough the following provider"|t('image-captions', {
+                volume: volume.name
+            }),
+            options: providersAsOptions,
+            value: craft.imageCaption.configuration.getProviderHandleForVolume(volume),
+            errors: volume.getErrors("#{volume.handle}")
+        }) }}
+    {% endfor %}
+{% endblock %}

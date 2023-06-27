@@ -1,0 +1,45 @@
+{% extends 'image-captions/_layouts/settings' %}
+
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') %}
+
+{% import '_includes/forms.twig' as forms %}
+
+{% set selectedHandle = 'providers' %}
+
+{% block actionButton %}
+    <a href="{{ cpUrl('image-captions/providers/new') }}" class="btn submit add icon">{{ "New provider"|t('image-captions') }}</a>
+{% endblock %}
+
+{% set tableData = [] %}
+{% for provider in providers %}
+    {% set tableData = tableData|merge([{
+        id: provider.id,
+        title: provider.name,
+        url: cpUrl("image-captions/providers/#{provider.id}"),
+        handle: provider.handle,
+        class: provider.class,
+        dateUpdated: provider.dateUpdated|date('Y-m-d H:i'),
+    }]) %}
+{% endfor %}
+
+{% block content %}
+    <div id="providers-vue-admin-table"></div>
+{% endblock %}
+
+{% js %}
+    var columns = [
+        { name: '__slot:title', title: Craft.t('app', 'Name') },
+        { name: '__slot:handle', title: Craft.t('app', 'Handle') },
+        { name: 'class', title: Craft.t('image-captions', 'Class') },
+        { name: 'dateUpdated', title: Craft.t('image-captions', 'Last updated') },
+    ];
+
+    new Craft.VueAdminTable({
+        columns: columns,
+        container: '#providers-vue-admin-table',
+        deleteAction: 'image-captions/providers/delete',
+        deleteConfirmationMessage: Craft.t('image-captions', "Are you sure you want to delete “{name}”?"),
+        emptyMessage: Craft.t('image-sources', 'No providers have been configured.'),
+        tableData: {{ tableData|json_encode|raw }}
+    });
+{% endjs %}

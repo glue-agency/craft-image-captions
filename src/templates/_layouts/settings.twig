@@ -1,0 +1,34 @@
+{% extends '_layouts/cp' %}
+
+{% set title = 'Image Captions' %}
+{% set fullPageForm = true %}
+{% set crumbs = [
+    {
+        label: 'Settings'|t('app'),
+        url: cpUrl('settings')
+    },
+] %}
+
+
+{% set navItems = {
+    configurations: {
+        title: 'Volume configurations'|t('image-captions')
+    },
+    providers: {
+        title: 'Providers'|t('image-captions')
+    }
+} %}
+
+{% block sidebar %}
+    <nav>
+        <ul>
+            {% for handle, item in navItems %}
+                <li>
+                    <a href="{{ cpUrl("image-captions/#{handle}") }}"{% if handle == selectedHandle %} class="sel"{% endif %}>{{ item.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}
+
+{% block content %}{% endblock %}
