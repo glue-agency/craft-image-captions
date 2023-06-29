@@ -8,6 +8,7 @@ use craft\events\ConfigEvent;
 use craft\helpers\Db;
 use GlueAgency\ImageCaption\enums\ProjectConfig as ProjectConfigEnum;
 use GlueAgency\ImageCaption\enums\Table;
+use GlueAgency\ImageCaption\records\Configuration;
 
 class ConfigurationListener
 {
@@ -31,7 +32,7 @@ class ConfigurationListener
             'dateUpdated'    => Db::prepareDateForDb(Carbon::now()),
         ];
 
-        if (! isset($payload['dateCreated'])) {
+        if (! Configuration::find()->where(['=', 'uid', $uid])->exists()) {
             $payload['dateCreated'] = Db::prepareDateForDb(Carbon::now());
 
             Craft::$app->db->createCommand()
