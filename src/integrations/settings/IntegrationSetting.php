@@ -4,6 +4,7 @@ namespace GlueAgency\ImageCaption\integrations\settings;
 
 class IntegrationSetting
 {
+
     const TEXT = 'text';
     const PASSWORD = 'password';
     const BOOL = 'bool';

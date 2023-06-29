@@ -5,7 +5,7 @@ namespace GlueAgency\ImageCaption\validators;
 use Craft;
 use yii\validators\Validator;
 
-class ProviderSettingsValidator extends Validator
+class IntegrationSettingsRequiredValidator extends Validator
 {
 
     public function validateAttribute($model, $attribute): void

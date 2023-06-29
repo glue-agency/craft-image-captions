@@ -3,8 +3,10 @@
 namespace GlueAgency\ImageCaption\models;
 
 use craft\base\Model;
+use craft\validators\UniqueValidator;
 use GlueAgency\ImageCaption\records\Provider as ProviderRecord;
-use GlueAgency\ImageCaption\validators\ProviderSettingsValidator;
+use GlueAgency\ImageCaption\validators\IntegrationSettingsRequiredValidator;
+use GlueAgency\ImageCaption\validators\IntegrationSettingsValidator;
 
 class Provider extends Model
 {
@@ -66,8 +68,8 @@ class Provider extends Model
         $rules = [];
 
         $rules[] = [['name', 'handle', 'class'], 'required'];
-        $rules[] = [['handle'], 'unique', 'targetClass' => ProviderRecord::class, 'targetAttribute' => 'handle'];
-        $rules[] = [['settings'], ProviderSettingsValidator::class];
+        $rules[] = [['handle'], UniqueValidator::class, 'targetClass' => ProviderRecord::class];
+        $rules[] = [['settings'], IntegrationSettingsRequiredValidator::class];
 
         return $rules;
     }
